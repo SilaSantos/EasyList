@@ -170,9 +170,9 @@ export function Home(){
             {
                 newItem.length === 0 ? 
 
-                <View style={{justifyContent: 'center', alignItems: 'center', marginTop:50}}>
-                    <Image source={require('../image/cesta.png')} style={{width: 210, height: 210}}/>
-                    <Text style={{color: '#FFFFFF', fontStyle: 'italic', marginTop: -20}}>Sua lista está vazia</Text>
+                <View style={styles.contentLoading}>
+                    <Image source={require('../image/list.png')} style={styles.imageLoading}/>
+                    <Text style={styles.textLoading}>Sua lista está vazia</Text>
                 </View>
                 : 
                 <FlatList
@@ -252,5 +252,18 @@ const styles = StyleSheet.create({
     },
     titleTotal: {
         color: '#CCC'
+    },
+    contentLoading: {
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        marginTop: 80
+    },
+    imageLoading: {
+        width: 160,
+        height: 160
+    },
+    textLoading: {
+        color: '#FFFFFF', 
+        fontStyle: 'italic'
     }
 })
