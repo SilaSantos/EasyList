@@ -37,19 +37,19 @@ export function Home(){
         }
         const numericPrice = Number(price.replace(/[^0-9.-]+/g, ''));
 
-        if (isNaN(numericPrice) || numericPrice <=0 ) {
-            Toast.show({
-                type: 'error',
-                text1: "Atenção",
-                text2: "O preço não pode estar zerado.",
-              });
-            return false;
-        }
         if (!Number.isInteger(Number(quant)) || Number(quant) <= 0) {
             Toast.show({
                 type: 'error',
                 text1: "Atenção",
                 text2: "A quantidade não pode estar zerado.",
+              });
+            return false;
+        }
+        if (isNaN(numericPrice) || numericPrice <=0 ) {
+            Toast.show({
+                type: 'error',
+                text1: "Atenção",
+                text2: "O preço não pode estar zerado.",
               });
             return false;
         }
@@ -167,15 +167,25 @@ export function Home(){
                 <Text style={styles.titleTotal}>Total: {total.toFixed(2)}</Text>
             </View>
 
-            <FlatList
-                data={newItem}
-                keyExtractor={item => item.id}
-                style={styles.flatList}
-                showsVerticalScrollIndicator={false}
-                renderItem={({item}) => (
-                    <ItemCard name={item.name} price={item.price} quant={item.quant} onPress={() => handleRemoveItem(item.id)}/>
-                )}
-            />
+            {
+                newItem.length === 0 ? 
+
+                <View style={{justifyContent: 'center', alignItems: 'center', marginTop:50}}>
+                    <Image source={require('../image/cesta.png')} style={{width: 210, height: 210}}/>
+                    <Text style={{color: '#FFFFFF', fontStyle: 'italic', marginTop: -20}}>Sua lista está vazia</Text>
+                </View>
+                : 
+                <FlatList
+                    data={newItem}
+                    keyExtractor={item => item.id}
+                    style={styles.flatList}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={({item}) => (
+                        <ItemCard name={item.name} price={item.price} quant={item.quant} onPress={() => handleRemoveItem(item.id)}/>
+                    )}
+                />
+            }
+
             <Toast /> 
         </View>
     )
