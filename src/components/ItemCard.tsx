@@ -6,15 +6,18 @@ interface ItemCardProps extends TouchableOpacityProps{
     name: string;
     price: string;
     quant: string;
+    onNamePress: () => void;
 }
-export function ItemCard({name,price, quant, ...rest}: ItemCardProps){    
+export function ItemCard({name,price, quant,onNamePress, ...rest}: ItemCardProps){    
     
     const MAX_LENGTH = 13;
     const displayName = name.length > MAX_LENGTH ? `${name.substring(0, MAX_LENGTH)}...` : name;
 
     return(
         <View style={styles.buttonItem} {...rest}>
-            <Text style={styles.textItem}>{displayName}</Text>
+            <TouchableOpacity onPress={onNamePress}>
+                <Text style={styles.textItem}>{displayName}</Text>
+            </TouchableOpacity>
             <View style={styles.priceQuantityGroup}>
                 <Text style={styles.groupText}>Quant: {quant}</Text>
                 <Text style={styles.groupText}>{price}</Text>

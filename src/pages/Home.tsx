@@ -1,10 +1,9 @@
 import React, {useState, useEffect} from "react";
-import { View, Text, StyleSheet, Image, TextInput, FlatList } from "react-native";
+import { View, Text, StyleSheet, Image, TextInput, FlatList, Modal, TouchableOpacity} from "react-native";
 
 
 import { TextInputMask } from 'react-native-masked-text';
-import Toast from 'react-native-toast-message'; // Importe Toast
-
+import Toast from 'react-native-toast-message';
 
 import { Button } from "../components/Button";
 import { ItemCard } from "../components/ItemCard";
@@ -24,6 +23,8 @@ export function Home(){
     const [quant, setQuant] = useState('');
     const [newItem, setNewItem] = useState<NewItems[]>([]);
     const [total, setTotal] = useState(0);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedItem, setSelectedItem] = useState<NewItems | null>(null);
 
 
     function validateInputs(nameProduct: string, price: string, quant: string){
@@ -106,10 +107,16 @@ export function Home(){
         ))
     }
 }
+
+    function handleItemPress(item: NewItems) {
+        setSelectedItem(item);
+        setModalVisible(true);
+    }
     
-    const MonthNow = new Date().getMonth()+1;
-    const dayNow = new Date().getDate();
-    const dateNow = `${dayNow}/${MonthNow}`
+    const MonthNow = String(new Date().getMonth() + 1).padStart(2, '0'); 
+    const dayNow = String(new Date().getDate()).padStart(2, '0');
+    const yearNow = new Date().getFullYear();
+    const dateNow = `${dayNow}/${MonthNow}/${yearNow}`;
 
     useEffect(() => {
         const currentHour = new Date().getHours();
@@ -163,13 +170,13 @@ export function Home(){
             <Button title="Adicionar" onPress={handleAddNewItem}/>
 
             <View style={styles.contentTotal}>
-                <Text style={styles.titleList}>Listagem do dia {dateNow}</Text>
+                <Text style={styles.titleList}>Lista do dia {dateNow}</Text>
                 <Text style={styles.titleTotal}>Total: {total.toFixed(2)}</Text>
             </View>
 
             {
                 newItem.length === 0 ? 
-
+               
                 <View style={styles.contentLoading}>
                     <Image source={require('../image/list.png')} style={styles.imageLoading}/>
                     <Text style={styles.textLoading}>Sua lista está vazia</Text>
@@ -181,10 +188,41 @@ export function Home(){
                     style={styles.flatList}
                     showsVerticalScrollIndicator={false}
                     renderItem={({item}) => (
-                        <ItemCard name={item.name} price={item.price} quant={item.quant} onPress={() => handleRemoveItem(item.id)}/>
+                            <ItemCard name={item.name} price={item.price} quant={item.quant} onNamePress={() => handleItemPress(item)} onPress={() => handleRemoveItem(item.id)}/>
                     )}
                 />
             }
+
+            <Modal
+                transparent
+                visible={modalVisible}
+                animationType="slide"
+                onRequestClose={() => setModalVisible(false)}
+            >
+            
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Detalhes do Produto</Text>
+                        {selectedItem && (
+                        <>
+                            <Text style={styles.modalText}>
+                                Nome: {selectedItem.name}
+                            </Text>
+                            <Text style={styles.modalText}>
+                                Quantidade: {selectedItem.quant}
+                            </Text>
+                            <Text style={styles.modalText}>
+                                Preço: {selectedItem.price}
+                            </Text>
+                        </>
+                        )}
+                        <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.buttonModal}>
+                            <Text style={styles.buttonTextModal}>Fechar</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+            </Modal>
 
             <Toast /> 
         </View>
@@ -254,16 +292,51 @@ const styles = StyleSheet.create({
         color: '#CCC'
     },
     contentLoading: {
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        marginTop: 80
+        marginTop: 130,
+        alignItems: 'center'
     },
     imageLoading: {
-        width: 160,
-        height: 160
+        width: 150,
+        height: 150,
     },
     textLoading: {
         color: '#FFFFFF', 
         fontStyle: 'italic'
+    },
+      modalContainer: {
+        backgroundColor: 'transparent', // Deixe o fundo do container transparente
+        justifyContent: 'flex-end', // Garante que o modal fique na parte inferior
+        alignItems: 'center', // Centraliza horizontalmente
+        flex: 1,
+      },
+      modalContent: {
+        width: "100%",
+        height: 'auto',
+        backgroundColor: "#fff",
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        padding: 10,
+      },
+      modalTitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+        marginBottom: 15,
+        textAlign: 'center'
+      },
+      modalText: {
+        fontSize: 16,
+        marginBottom: 5,
+      },
+      buttonModal: {
+        backgroundColor: '#d35454',
+        padding: 12,
+        borderRadius: 7,
+        alignItems: 'center',
+        marginVertical: 30
+    },
+    buttonTextModal: {
+        color: '#FFFFFF',
+        fontSize: 17,
+        fontWeight: 'bold'
     }
 })
